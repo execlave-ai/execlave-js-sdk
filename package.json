@@ -1,0 +1,121 @@
+{
+  "name": "@execlave/sdk",
+  "version": "1.1.0",
+  "description": "Official JavaScript/TypeScript SDK for the Execlave AI agent governance platform — tracing, policy enforcement, and framework auto-instrumentation for LangChain",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./instrumentation": {
+      "types": "./dist/instrumentation/index.d.ts",
+      "default": "./dist/instrumentation/index.js"
+    },
+    "./integrations/langchain": {
+      "types": "./dist/integrations/langchain.d.ts",
+      "default": "./dist/integrations/langchain.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf dist",
+    "type-check": "tsc --noEmit",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "execlave",
+    "ai",
+    "agent",
+    "governance",
+    "compliance",
+    "policy",
+    "policy-enforcement",
+    "security",
+    "monitoring",
+    "anomaly-detection",
+    "real-time",
+    "real-time-enforcement",
+    "self-hosted",
+    "open-source",
+    "privacy",
+    "data-protection",
+    "AI-ops",
+    "AI-guardrails",
+    "guardrails",
+    "observability",
+    "tracing",
+    "llm",
+    "agents",
+    "ai-agents",
+    "agent-governance",
+    "ai-safety",
+    "ai-compliance",
+    "audit",
+    "langchain",
+    "openai-agents"
+  ],
+  "license": "MIT",
+  "author": "Execlave <support@execlave.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/execlave-ai/execlave-js-sdk.git",
+    "directory": "."
+  },
+  "bugs": {
+    "url": "https://github.com/execlave-ai/execlave-js-sdk/issues"
+  },
+  "homepage": "https://www.execlave.com/docs/sdk-reference",
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@langchain/core": ">=0.3.0 <0.4.0",
+    "@opentelemetry/api": ">=1.4.0",
+    "@opentelemetry/exporter-trace-otlp-http": ">=0.41.0",
+    "@opentelemetry/resources": ">=1.15.0",
+    "@opentelemetry/sdk-trace-base": ">=1.15.0",
+    "socket.io-client": "^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@langchain/core": {
+      "optional": true
+    },
+    "@opentelemetry/api": {
+      "optional": true
+    },
+    "@opentelemetry/sdk-trace-base": {
+      "optional": true
+    },
+    "@opentelemetry/exporter-trace-otlp-http": {
+      "optional": true
+    },
+    "@opentelemetry/resources": {
+      "optional": true
+    },
+    "socket.io-client": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.213.0",
+    "@opentelemetry/resources": "^2.6.0",
+    "@opentelemetry/sdk-trace-base": "^2.6.0",
+    "@types/jest": "^29.5.0",
+    "jest": "^29.7.0",
+    "rimraf": "^5.0.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
