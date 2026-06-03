@@ -1,0 +1,118 @@
+# Changelog
+
+All notable changes to `@execlave/sdk` will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [1.3.0] - 2026-06-03
+
+### Added
+
+- **Agent identity stamping.** New `stampIdentity` config option (default `false`).
+  When enabled, the client issues and caches a short-lived RS256 `exe_agt_`
+  credential per agent and attaches it to each trace on ingest (`agentCredential`
+  field on `TracePayload`), so the platform can cryptographically stamp who
+  produced the trace. Best-effort and non-breaking: if a credential cannot be
+  issued, traces are still sent unstamped — stamping never blocks or drops ingest.
+- **MCP tool-integrity surfaces.** Optional, backwards-compatible additions for
+  MCP tool-supply-chain governance:
+  - `toolDescriptor({ server, tool, descriptor, description? })` — computes the
+    stable SHA-256 descriptor hash (canonical, key-order independent) used to pin
+    and diff a tool.
+  - `reportToolBaseline({ agentId, descriptors, reason? })` — pins the approved
+    set of `(server, tool, descriptorHash)` tuples for an agent; re-pin with
+    `reason: 'baseline_update'` after a reviewed tool update.
+  - `enforcePolicy()` accepts an optional `toolDescriptors` array that is diffed
+    against the agent's pinned baseline at runtime.
+  - New `ToolIntegrityError` (extends `PolicyBlockedError`) is thrown when an
+    enforcement is denied by a `tool_integrity` policy. `ToolDescriptorInput` and
+    `ReportToolBaselineOptions` are exported from the type surface. Callers that
+    do not use these fields are unaffected.
+
+### Changed
+
+- No telemetry. The SDK does not phone home, emit anonymous usage events, or
+  fetch remote configuration. Every network call goes to the Execlave backend
+  URL configured by the caller.
+
+## [1.2.1] - 2026-05-29
+
+### Added
+
+- **AI Agent Management Platform (AMP) surfaces.** Optional, backwards-compatible
+  additions for the governance features:
+  - `registerAgent()` accepts an optional `autonomyLevel`
+    (`observe` | `advise` | `act_with_approval` | `autonomous`) that maps the
+    agent onto a tiered-governance template.
+  - New `reportAgentMetadata()` method that records a version snapshot in the
+    agent registry (`versionLabel` / `gitCommit` / `deployedAt` / `notes` /
+    `activate`) — call it from a deploy pipeline to build version history for
+    diff/rollback.
+  - `AutonomyLevel` and `ReportAgentMetadataOptions` exported from the type
+    surface. Callers that do not set these fields are unaffected.
+
+## [1.2.0] - 2026-05-28
+
+### Added
+
+- **Framework integration modules** (tree-shakeable, opt-in via
+  `@execlave/sdk/integrations`): Model Context Protocol (MCP) wrapper and an
+  OpenAI Chat Completions wrapper that route tool calls / completions through
+  policy enforcement and trace ingestion without changing the host app's call
+  sites.
+
+## [1.1.5] - 2026-05-05
+
+### Added
+
+- `ValidatorDeniedError` (extends `PolicyBlockedError`) for programmatic handling
+  of denials originating from a Custom Validator (BYOV). The `fromViolations()`
+  factory returns a `ValidatorDeniedError` when any violation is validator-sourced
+  and a plain `PolicyBlockedError` otherwise, so existing `catch` sites keep working.
+
+### Fixed
+
+- `http://api.execlave.com` is normalized to `https://api.execlave.com` so
+  POST-based calls are not downgraded to GET by an HTTP-to-HTTPS redirect.
+- Policy enforcement cache keys now include environment to avoid reusing a
+  development response for production, or vice versa.
+
+## [1.1.4] - 2026-05-05
+
+### Fixed
+
+- `registerAgent()` now handles agent responses wrapped as `{ data: [...] }`
+  by selecting the matching `agentId` instead of passing the list into `Agent`.
+- `enforcePolicy()` docs/types now explicitly allow either the registered
+  external `agentId` or the internal agent UUID, matching the backend
+  `/policies/enforce` contract.
+
+## [1.0.0] — 2026-04
+
+### Added
+
+- Initial public release of `@execlave/sdk`.
+- `ExeclaveClient` with policy enforcement (`enforce`), trace ingestion
+  (`ingestTrace`), and agent registration (`registerAgent`).
+- TypeScript type definitions shipped alongside the compiled JavaScript.
+- Zero runtime dependencies beyond `node:fetch`.
+- Works in Node.js 18+ and modern browsers.
+- Support for API keys via the `exe_` / `exe_test_` prefix.
+
+### Security
+
+- TLS certificate verification is always enabled and cannot be disabled via
+  a flag. Callers who need to target a self-signed local environment must
+  configure `NODE_TLS_REJECT_UNAUTHORIZED` at the process level and accept
+  the risk explicitly.
+
+[Unreleased]: https://github.com/rishitmavani/agentguard/compare/sdk-js-v1.3.0...HEAD
+[1.3.0]: https://github.com/rishitmavani/agentguard/compare/sdk-js-v1.2.1...sdk-js-v1.3.0
+[1.2.1]: https://github.com/rishitmavani/agentguard/compare/sdk-js-v1.2.0...sdk-js-v1.2.1
+[1.2.0]: https://github.com/rishitmavani/agentguard/compare/sdk-js-v1.1.5...sdk-js-v1.2.0
+[1.1.5]: https://github.com/rishitmavani/agentguard/compare/sdk-js-v1.1.4...sdk-js-v1.1.5
+[1.1.4]: https://github.com/rishitmavani/agentguard/compare/sdk-js-v1.1.3...sdk-js-v1.1.4
+[1.0.0]: https://github.com/rishitmavani/agentguard/releases/tag/sdk-js-v1.0.0
